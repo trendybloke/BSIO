@@ -1,0 +1,32 @@
+﻿@page "/game/{lobbyID}"
+
+<MudText Typo="Typo.h3">[PLAYER 1]'s turn</MudText>
+
+<MudGrid Justify="Justify.FlexStart" Spacing="1">
+	<MudItem xs="7">
+		<MudPaper Class="mud-theme-dark" Height="75vh">
+			<GameTable />
+			<GameHand @bind-PlayerHand="PlayerHand"/>
+		</MudPaper>
+	</MudItem>
+	<MudItem xs="5">
+		<GameChatWindow/>
+	</MudItem>
+</MudGrid>
+
+
+@code {
+	[Parameter]
+	public string lobbyID { get; set; }
+
+	public List<Card> PlayerHand { get; set; } = new List<Card>()
+	{
+		new Card(),
+		new Card(),
+		new Card(),
+		new Card(),
+		new Card(),
+		new Card(),
+		new Card()
+	};
+}
