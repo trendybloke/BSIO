@@ -1,0 +1,29 @@
+﻿<MudPaper Class="mud-theme-dark">
+	<MudPaper Class="pa-4">
+		<MudStack Spacing="1">
+			<MudTable Items="ChatMessages" FixedHeader="true" FixedFooter="true" Height="65vh">
+				<RowTemplate>@context</RowTemplate>
+			</MudTable>
+			<MudStack Row="true">
+				<MudTextField @bind-Value="ChatMessage" Placeholder="Enter message..." Variant="Variant.Outlined"></MudTextField>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary">MSG</MudButton>
+			</MudStack>
+		</MudStack>
+	</MudPaper>
+</MudPaper>
+
+@code {
+	string ChatMessage { get; set; }
+	List<string> ChatMessages { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		ChatMessages = new List<string>();
+
+		ChatMessages.Add("[00:00] Welcome to Bullshit.IO!");
+		ChatMessages.Add("[00:03] PLAYER2: Yo what's good PLAYER 1?");
+		ChatMessages.Add("[00:03] PLAYER3: Took you long enough, PLAYER 1!");
+	}
+}

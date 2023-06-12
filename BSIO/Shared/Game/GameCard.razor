@@ -1,0 +1,36 @@
+﻿<div class="pa-2">
+	<button @onclick="@cardClicked"
+			class="@getCardClass">
+		<img src="@Card.ImagePath" height="200" width="150" />
+	</button>
+</div>
+
+@code {
+	private bool _selected;
+
+	private string getCardClass => _selected ? "border border-primary mt-2" : "mt-6";
+
+	[Parameter]
+	public Card Card { get; set; }
+
+	[Parameter]
+	public bool Selected { get { return _selected; } init { _selected = false; } }
+
+	[Parameter]
+	public EventCallback<Card> CardSelected { get; set; }
+
+	[Parameter]
+	public EventCallback<Card> CardUnSelected { get; set; }
+
+	async void cardClicked()
+	{
+		_selected = !_selected;
+
+		if (_selected)
+			await CardSelected.InvokeAsync();
+		else
+			await CardUnSelected.InvokeAsync();
+
+	}
+
+}

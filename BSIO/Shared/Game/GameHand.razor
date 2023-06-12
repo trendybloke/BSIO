@@ -1,0 +1,64 @@
+﻿<MudPaper Height="35%" Class="mud-theme-primary ma-4">
+	<div class="d-flex">
+		<div class="d-flex bg-dark rounded-1 pa-1" style="overflow-x: scroll; width:85%;">
+			@foreach(var card in PlayerHand)
+			{
+				<GameCard	Card="@card" 
+							CardSelected="@(() => SelectedCards.Add(card))"
+							CardUnSelected="@(() => SelectedCards.Remove(card))"/>
+			}
+		</div>
+
+		<div class="d-flex flex-column justify-content-center ml-4">
+			<MudTooltip Text="Place the selected cards as they are">
+				<MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@TruthClicked" Size="Size.Large" Disabled="SelectedCards.Count < 2 || SelectedCards.Count > 4">Truth</MudButton>
+			</MudTooltip>
+			<br/>
+			<MudTooltip Text="Place the cards and annouce a different hand">
+				<MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="@LieClicked" Size="Size.Large" Disabled="SelectedCards.Count < 2 || SelectedCards.Count > 4">Lie</MudButton>
+			</MudTooltip>
+		</div>
+	</div>
+</MudPaper>
+
+
+@code {
+	private List<Card> SelectedCards = new List<Card>();
+
+	[Parameter]
+	public List<Card> PlayerHand { get; set; }
+
+	[Parameter]
+	public EventCallback<List<Card>> PlayerHandChanged { get; set; }
+
+	[Parameter]
+	public Expression<Func<List<Card>>> PlayerHandExpression { get; set; }
+
+	[Parameter]
+	public EventCallback<List<Card>> TruthSelected { get; set; }
+
+	[Parameter]
+	public EventCallback<List<Card>> LieSelected { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		SelectedCards = new List<Card>();
+	}
+
+	async void TruthClicked()
+	{
+		// Card matching logic goes here.
+
+		await TruthSelected.InvokeAsync();
+	}
+
+	async void LieClicked()
+	{
+		// Display popup for lie
+
+		await LieSelected.InvokeAsync();
+	}
+
+}
