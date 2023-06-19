@@ -22,8 +22,20 @@
 
 		ChatMessages = new List<string>();
 
-		ChatMessages.Add("[00:00] Welcome to Bullshit.IO!");
-		ChatMessages.Add("[00:03] PLAYER2: Yo what's good PLAYER 1?");
-		ChatMessages.Add("[00:03] PLAYER3: Took you long enough, PLAYER 1!");
+		AddMessage("Welcome to Bullshit.IO!");
+		AddMessage("PLAYER 2", "Yo what's good PLAYER 1?");
+		AddMessage("PLAYER 3", "Took u long enough!");
+	}
+
+	public void AddMessage(string content)
+	{
+		ChatMessages.Add($"[{DateTime.Now.ToString("HH:mm:ss")}] {content}");
+		StateHasChanged();
+	}
+
+	public void AddMessage(string speaker, string content)
+	{
+		ChatMessages.Add($"[{DateTime.Now.ToString("HH:mm:ss")}] {speaker}: {content}");
+		StateHasChanged();
 	}
 }

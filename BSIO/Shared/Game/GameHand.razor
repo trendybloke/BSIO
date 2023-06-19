@@ -3,9 +3,11 @@
 		<div class="d-flex bg-dark rounded-1 pa-1" style="overflow-x: scroll; width:85%;">
 			@foreach(var card in PlayerHand)
 			{
-				<GameCard	Card="@card" 
+				<GameCard	Card="@card"
+							Selected="@(GameCardIsSelected(card))"
 							CardSelected="@(() => SelectedCards.Add(card))"
-							CardUnSelected="@(() => SelectedCards.Remove(card))"/>
+							CardUnSelected="@(() => SelectedCards.Remove(card))"
+							/>
 			}
 		</div>
 
@@ -34,11 +36,15 @@
 	[Parameter]
 	public Expression<Func<List<Card>>> PlayerHandExpression { get; set; }
 
+	// Unsure if correct
 	[Parameter]
-	public EventCallback<List<Card>> TruthSelected { get; set; }
+	public EventCallback<HandPlacedEventArgs> TruthSelected { get; set; }
 
 	[Parameter]
-	public EventCallback<List<Card>> LieSelected { get; set; }
+	public EventCallback<HandPlacedEventArgs> LieSelected { get; set; }
+	// see above
+
+	private bool GameCardIsSelected(Card card) => SelectedCards.Contains(card);
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -47,18 +53,45 @@
 		SelectedCards = new List<Card>();
 	}
 
+	public void RemoveSelectedCards()
+	{
+		foreach(var card in SelectedCards)
+		{
+			PlayerHand.Remove(card);
+		}
+
+		DeselectCards();
+	}
+
+	public void DeselectCards()
+	{
+		SelectedCards.Clear();
+		StateHasChanged();
+	}
+
 	async void TruthClicked()
 	{
+		// Create event args
+		HandPlacedEventArgs args = new HandPlacedEventArgs(
+			new TrueCardHand(SelectedCards)
+		);
+
 		// Card matching logic goes here.
 
-		await TruthSelected.InvokeAsync();
+		await TruthSelected.InvokeAsync(args);
+		
+		RemoveSelectedCards();
 	}
 
 	async void LieClicked()
 	{
 		// Display popup for lie
 
+		// Create event args
+
 		await LieSelected.InvokeAsync();
+
+		DeselectCards();
 	}
 
 }

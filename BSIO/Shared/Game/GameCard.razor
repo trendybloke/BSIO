@@ -6,15 +6,16 @@
 </div>
 
 @code {
-	private bool _selected;
-
-	private string getCardClass => _selected ? "border border-primary mt-2" : "mt-6";
+	private string getCardClass => Selected ? "border border-primary mt-2" : "mt-6";
 
 	[Parameter]
 	public Card Card { get; set; }
 
 	[Parameter]
-	public bool Selected { get { return _selected; } init { _selected = false; } }
+	public bool Selected { get; set; }
+
+	[Parameter]
+	public EventCallback<bool> SelectedChanged { get; set; }
 
 	[Parameter]
 	public EventCallback<Card> CardSelected { get; set; }
@@ -24,9 +25,9 @@
 
 	async void cardClicked()
 	{
-		_selected = !_selected;
+		Selected = !Selected; 
 
-		if (_selected)
+		if (Selected)
 			await CardSelected.InvokeAsync();
 		else
 			await CardUnSelected.InvokeAsync();

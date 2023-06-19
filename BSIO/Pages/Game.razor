@@ -6,11 +6,11 @@
 	<MudItem xs="7">
 		<MudPaper Class="mud-theme-dark" Height="75vh">
 			<GameTable />
-			<GameHand @bind-PlayerHand="PlayerHand"/>
+			<GameHand @bind-PlayerHand="PlayerHand" @ref="hand" TruthSelected="OnTruthSelected" LieSelected="OnLieSelected"/>
 		</MudPaper>
 	</MudItem>
 	<MudItem xs="5">
-		<GameChatWindow/>
+		<GameChatWindow @ref="chatwindow"/>
 	</MudItem>
 </MudGrid>
 
@@ -29,4 +29,23 @@
 		new Card(),
 		new Card()
 	};
+
+	private GameHand? hand;
+	private GameChatWindow? chatwindow;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+	}
+
+	void OnTruthSelected(HandPlacedEventArgs e)
+	{
+		chatwindow?.AddMessage("Truth was selected");
+		chatwindow?.AddMessage($"Placed {e.Hand.DeclaredHand}");
+	}
+
+	void OnLieSelected(HandPlacedEventArgs e)
+	{
+		chatwindow?.AddMessage("Lie was selected");
+	}
 }
