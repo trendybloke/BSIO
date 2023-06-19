@@ -5,8 +5,8 @@
 <MudGrid Justify="Justify.FlexStart" Spacing="1">
 	<MudItem xs="7">
 		<MudPaper Class="mud-theme-dark" Height="75vh">
-			<GameTable />
-			<GameHand @bind-PlayerHand="PlayerHand" @ref="hand" TruthSelected="OnTruthSelected" LieSelected="OnLieSelected"/>
+			<GameTable @bind-Pile="GameState.Pile" @ref="table" />
+			<GameHand @bind-PlayerHand="PlayerHand" @ref="hand" TruthSelected="OnTruthSelected" LieSelected="OnLieSelected" DrawSelected="OnDrawSelected"/>
 		</MudPaper>
 	</MudItem>
 	<MudItem xs="5">
@@ -18,6 +18,8 @@
 @code {
 	[Parameter]
 	public string lobbyID { get; set; }
+
+	public GameState GameState { get; set; }
 
 	public List<Card> PlayerHand { get; set; } = new List<Card>()
 	{
@@ -31,21 +33,41 @@
 	};
 
 	private GameHand? hand;
+	private GameTable? table;
 	private GameChatWindow? chatwindow;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+
+		GameState = new GameState();
 	}
 
 	void OnTruthSelected(HandPlacedEventArgs e)
 	{
 		chatwindow?.AddMessage("Truth was selected");
+
+		GameState.Pile.Add(e.Hand);
+
 		chatwindow?.AddMessage($"Placed {e.Hand.DeclaredHand}");
+
+		StateHasChanged();
 	}
 
 	void OnLieSelected(HandPlacedEventArgs e)
 	{
 		chatwindow?.AddMessage("Lie was selected");
+
+		GameState.Pile.Add(e.Hand);
+
+		chatwindow?.AddMessage($"Placed '{e.Hand.DeclaredHand}'");
+
+		StateHasChanged();
+	}
+
+	void OnDrawSelected()
+	{
+		PlayerHand.Add(new Card());
+		StateHasChanged();
 	}
 }

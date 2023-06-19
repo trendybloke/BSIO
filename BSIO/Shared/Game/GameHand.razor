@@ -1,4 +1,6 @@
-﻿<MudPaper Height="35%" Class="mud-theme-primary ma-4">
+﻿@inject IDialogService DialogService
+
+<MudPaper Height="35%" Class="mud-theme-primary ma-4">
 	<div class="d-flex">
 		<div class="d-flex bg-dark rounded-1 pa-1" style="overflow-x: scroll; width:85%;">
 			@foreach(var card in PlayerHand)
@@ -19,10 +21,25 @@
 			<MudTooltip Text="Place the cards and annouce a different hand">
 				<MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="@LieClicked" Size="Size.Large" Disabled="SelectedCards.Count < 2 || SelectedCards.Count > 4">Lie</MudButton>
 			</MudTooltip>
+			<br />
+			<MudTooltip Text="Draw a new card">
+				<MudButton Color="Color.Info" Variant="Variant.Filled" OnClick="@DrawClicked" Size="Size.Large">Draw</MudButton>
+			</MudTooltip>
 		</div>
 	</div>
 </MudPaper>
 
+<MudMessageBox @ref="lieMessageBox" Title="Select your lie" CancelText="Cancel">
+	<MessageContent>
+		<MudSelect @bind-Value="lieRank">
+			<MudSelectItem Value="@("aces")">Aces</MudSelectItem>
+			<MudSelectItem Value="@("kings")">Kings</MudSelectItem>
+		</MudSelect>
+	</MessageContent>
+	<YesButton>
+		<MudButton Variant="Variant.Filled" Color="Color.Error">Lie</MudButton>
+	</YesButton>
+</MudMessageBox>
 
 @code {
 	private List<Card> SelectedCards = new List<Card>();
@@ -36,15 +53,20 @@
 	[Parameter]
 	public Expression<Func<List<Card>>> PlayerHandExpression { get; set; }
 
-	// Unsure if correct
 	[Parameter]
 	public EventCallback<HandPlacedEventArgs> TruthSelected { get; set; }
 
 	[Parameter]
 	public EventCallback<HandPlacedEventArgs> LieSelected { get; set; }
-	// see above
+
+	[Parameter]
+	public EventCallback DrawSelected { get; set; }
 
 	private bool GameCardIsSelected(Card card) => SelectedCards.Contains(card);
+
+	MudMessageBox? lieMessageBox { get; set; }
+
+	string lieRank;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -79,19 +101,33 @@
 		// Card matching logic goes here.
 
 		await TruthSelected.InvokeAsync(args);
-		
+
 		RemoveSelectedCards();
 	}
 
 	async void LieClicked()
 	{
 		// Display popup for lie
+		bool? result = await lieMessageBox.Show();
+
+		if (result is null)
+			return;
 
 		// Create event args
+		HandPlacedEventArgs args = new HandPlacedEventArgs(
+			new LieCardHand(SelectedCards, lieRank, SelectedCards.Count)
+		);
 
-		await LieSelected.InvokeAsync();
+		await LieSelected.InvokeAsync(args);
 
+		RemoveSelectedCards();
+	}
+
+	async void DrawClicked()
+	{
 		DeselectCards();
+
+		await DrawSelected.InvokeAsync();
 	}
 
 }

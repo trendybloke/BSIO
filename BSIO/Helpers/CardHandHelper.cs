@@ -9,6 +9,9 @@ namespace BSIO.Helpers
 
 		public static string HandContentsDeclaration(this List<Card> cards)
 		{
+			if (cards is null || cards.Count == 0)
+				return "None";
+
 			// Determine if all cards equal in rank
 			bool validHand = true;
 			for (int i = 1; i < cards.Count; i++)
@@ -49,6 +52,21 @@ namespace BSIO.Helpers
 		public static string HandContentsDeclaration(this ICardHand cardHand)
 		{
 			return HandContentsDeclaration(cardHand.Cards);
+		}
+
+		public static int CardsInPile(this List<ICardHand>? pile)
+		{
+			int total = 0;
+
+			if (pile is not null)
+			{
+				foreach (var hand in pile)
+				{
+					total += hand.Cards.Count;
+				}
+			}
+
+			return total;
 		}
 	}
 }

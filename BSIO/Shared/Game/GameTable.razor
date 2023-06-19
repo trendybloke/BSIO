@@ -10,5 +10,10 @@
 </MudPaper>
 
 @code {
+	[Parameter]
+	public List<ICardHand>? Pile { get; set; }
+
+	[Parameter]
+	public EventCallback<List<ICardHand>> PileChanged { get; set; }
 
 }
